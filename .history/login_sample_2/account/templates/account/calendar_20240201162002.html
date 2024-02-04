@@ -1,0 +1,58 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block title %}カレンダー{% endblock %}
+
+{% block head %}
+<link href="{% static 'fullcalendar/main.min.css' %}" rel='stylesheet' />
+<script src="{% static 'fullcalendar/main.min.js' %}"></script>
+<script src="{% static 'fullcalendar/locales-all.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <button id="addEventButton">イベント追加</button>
+    <div id="addEventForm" style="display: none;">
+        <input type="text" id="eventTitle" placeholder="イベント名">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">イベント保存</button>
+    </div>
+
+    <div id='calendar'></div>
+    <div id='eventDisplay'></div>
+</div>
+
+{% comment %} <link href="path_to_calendar_css" rel="stylesheet">
+<script src="path_to_calendar_js"> 
+</script>
+{% endblock %} {% endcomment %}
+
+{% comment %} <link href="{% static 'fullcalendar/main.min.css' %}" rel='stylesheet' /> {% comment %} {% comment %} {% endcomment %}
+{% comment %} <script src="{% static 'fullcalendar/main.min.js' %}"></script>
+<script src="{% static 'fullcalendar/locales-all.min.js' %}"></script> {% endcomment %}
+{% comment %} {% endblock %} {% endcomment %} 
+
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block title %}カレンダー{% endblock %}
+
+{% block head %}
+<link href="{% static 'fullcalendar/main.min.css' %}" rel='stylesheet' />
+<script src="{% static 'fullcalendar/main.min.js' %}"></script>
+<script src="{% static 'fullcalendar/locales-all.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <button id="addEventButton">イベント追加</button>
+    <div id="addEventForm" style="display: none;">
+        <input type="text" id="eventTitle" placeholder="イベント名">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">イベント保存</button>
+    </div>
+
+    <div id='calendar'></div>
+    <div id='eventDisplay'></div>
+</div>
+

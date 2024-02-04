@@ -1,0 +1,14 @@
+/* static/css/styles.css */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* ボタン間の余白 */
+  .btn + .btn {
+    margin-left: 10px;
+  }
+  

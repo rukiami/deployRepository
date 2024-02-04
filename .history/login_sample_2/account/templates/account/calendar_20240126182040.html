@@ -1,0 +1,56 @@
+{% extends "account/base.html" %}
+{% block title %}カレンダー{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div id='calendar'></div>
+</div>
+
+<!-- FullCalendarのスクリプトとスタイルシート -->
+<link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
+<script src='https://unpkg.com/fullcalendar@5.10.1/locales-all.min.js'></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'ja'
+    });
+    calendar.render();
+  });
+</script>
+
+{% endblock %}
+
+
+// FullCalendarの初期化
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ja',
+        dateClick: function(info) {
+            // 日付がクリックされたときのハンドラ
+            var dateStr = info.dateStr; // クリックされた日付の取得
+            fetchEventData(dateStr); // サーバーからイベントデータを取得する関数を呼び出し
+        }
+    });
+    calendar.render();
+});
+
+// サーバーからイベントデータを取得する関数
+function fetchEventData(dateStr) {
+    fetch('/get-event-data/' + dateStr) // Djangoビューからデータを取得するためのURL
+    .then(response => response.json())
+    .then(data => {
+        displayEventData(data); // データを表示する関数を呼び出し
+    });
+}
+
+// データを表示する関数
+function displayEventData(data) {
+    // ここでデータをHTMLに展開します
+    // 例: 写真、店舗リンク、Googleマップなど
+}

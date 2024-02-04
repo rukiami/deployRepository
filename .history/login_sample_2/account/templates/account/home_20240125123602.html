@@ -1,0 +1,28 @@
+{% extends "account/base.html" %}
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-5"></h1>
+    <p>{{ user.username }}さん、こんにちは。</p>
+    <a href="{% url 'account:logout' %}">ログアウト</a>
+    <div id='calendar'></div>
+</div>
+
+<!-- FullCalendarのスクリプトとスタイルシート -->
+<link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
+<script src='https://unpkg.com/fullcalendar@5.10.1/locales-all.min.js'></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'ja'
+    });
+    calendar.render();
+  });
+</script>
+
+{% endblock %}

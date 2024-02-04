@@ -1,0 +1,68 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block title %}カレンダー{% endblock %}
+
+{% block head %}
+<link href="{% static 'fullcalendar/main.min.css' %}" rel='stylesheet' />
+<script src="{% static 'fullcalendar/main.min.js' %}"></script>
+<script src="{% static 'fullcalendar/locales-all.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <button id="addEventButton">イベント追加</button>
+    <div id="addEventForm" style="display: none;">
+        <input type="text" id="eventTitle" placeholder="イベント名">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">イベント保存</button>
+    </div>
+
+    <div id='calendar'></div>
+    <div id='eventDisplay'></div>
+</div>
+
+{% comment %} <link href="path_to_calendar_css" rel="stylesheet">
+<script src="path_to_calendar_js"> 
+</script>
+{% endblock %} {% endcomment %}
+
+{% comment %} <link href="{% static 'fullcalendar/main.min.css' %}" rel='stylesheet' /> {% comment %} {% comment %} {% endcomment %}
+{% comment %} <script src="{% static 'fullcalendar/main.min.js' %}"></script>
+<script src="{% static 'fullcalendar/locales-all.min.js' %}"></script> {% endcomment %}
+{% comment %} {% endblock %} {% endcomment %} 
+
+<script>
+let calendar;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ja',
+        events: '/path_to_get_events/' // イベントデータを取得するURL
+    });
+    calendar.render();
+    
+
+// イベント追加ボタンの動作
+document.getElementById('addEventButton').addEventListener('click', function() {
+    document.getElementById('addEventForm').style.display = 'block';
+});
+
+// イベント保存ボタンの動作を設定
+document.getElementById('saveEventButton').addEventListener('click', addEvent);
+});
+
+function addEvent() {
+    var title = document.getElementById('eventTitle').value;
+    var date = document.getElementById('eventDate').value;
+
+    if (title && date) {
+        calendarApi.addEvent({
+            title: title,
+            start: date
+        });
+    }
+};
+

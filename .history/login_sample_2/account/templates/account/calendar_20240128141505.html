@@ -1,0 +1,87 @@
+{% extends "account/base.html" %}
+{% block title %}カレンダー{% endblock %}
+
+{% block content %}
+<!-- CSSファイルへのリンク -->
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+
+<div class="container">
+    <!-- イベント追加ボタンとフォーム -->
+    <button id="addEventButton">イベント追加</button>
+    <div id="addEventForm" style="display: none;">
+        <input type="text" id="eventTitle" placeholder="イベント名">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">イベント保存</button>
+    </div> 
+
+    <div id='calendar'></div>
+    <div id='eventDisplay'></div> <!-- イベントの詳細を表示するための要素 -->
+  </div>
+
+<!-- FullCalendarのスクリプトとスタイルシート -->
+<link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
+<script src='https://unpkg.com/fullcalendar@5.10.1/locales-all.min.js'></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'ja',
+      dateClick: function(info) {
+        var dateStr = info.dateStr; // クリックされた日付の取得
+        fetchEventData(dateStr); // サーバーからイベントデータを取得する関数を呼び出し
+      }
+    });
+    calendar.render();
+
+    document.getElementById('addEventButton').addEventListener('click', function() {
+      document.getElementById('addEventForm').style.display = 'block';  
+  });
+  
+  window.addEvent = function() {
+    var title = document.getElementById('eventTitle').value;
+    var date = document.getElementById('eventDate').value;
+
+    if (title && date) {
+        calendar.addEvent({
+            title: title,
+            start: date
+        });
+    }
+};
+});
+
+
+  // サーバーからイベントデータを取得する関数
+  function fetchEventData(dateStr) {
+    fetch('/get-event-data/' + dateStr) // Djangoビューからデータを取得するためのURL
+    .then(response => response.json())
+    .then(data => {
+      displayEventData(data); // データを表示する関数を呼び出し
+    });
+  }do
+
+  // データを表示する関数
+  
+  function displayEventData(data) {
+    var displayElement = document.getElementById('eventDisplay');
+    displayElement.innerHTML = ''; // 既存の内容をクリア
+  
+    data.forEach(event => {
+      if (event.image_url) {
+        var imgElement = document.createElement('img');
+        imgElement.src = event.image_url;
+        imgElement.alt = 'Event Image';
+        displayElement.appendChild(imgElement);
+      }
+  
+      var eventDetails = document.createElement('div');
+      eventDetails.innerHTML = 'イベント: ' + event.title + '<br>場所: ' + event.location;
+      displayElement.appendChild(eventDetails);
+    });
+  }
+</script>
+{% endblock %}  

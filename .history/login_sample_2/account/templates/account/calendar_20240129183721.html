@@ -1,0 +1,192 @@
+{% extends "account/base.html" %}
+{% load static %}  <!-- この行を追加 -->
+
+{% block title %}カレンダー{% endblock %}
+
+{% block content %}
+<!-- CSSファイルへのリンク -->
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+
+<div class="container">
+    <!-- イベント追加ボタンとフォーム -->
+    <button id="addEventButton">イベント追加</button>
+    <div id="addEventForm" style="display: none;">
+        <input type="text" id="eventTitle" placeholder="イベント名">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">イベント保存</button>
+    </div> 
+
+    <div id='calendar'></div>
+    <div id='eventDisplay'></div> <!-- イベントの詳細を表示するための要素 -->
+  </div>
+
+<!-- FullCalendarのスクリプトとスタイルシート -->
+<link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
+<script src='https://unpkg.com/fullcalendar@5.10.1/locales-all.min.js'></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'ja',
+      dateClick: function(info) {
+        fetchEventData(info.dateStr); // サーバーからイベントデータを取得する関数を呼び出し
+      }
+    });
+    calendar.render();
+
+    document.getElementById('addEventButton').addEventListener('click', function() {
+      document.getElementById('addEventForm').style.display = 'block';  
+  });
+});
+
+  window.addEvent = function() {
+    var title = document.getElementById('eventTitle').value;
+    var date = document.getElementById('eventDate').value;
+    
+    if (title && date) {
+      calendar.addEvent({
+            title: title,
+            start: date,
+            allDay: true
+          });
+          // サーバーにイベントを保存する
+      fetch('{% url 'account:add_event' %}', { // Django URL テンプレートタグを使用
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ title: title, date: date })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Event added:', data);
+        document.getElementById('addEventForm').style.display = 'none'; // フォームを非表示にする
+      })
+      .catch(error => {
+        console.error('Could not save the event:', error);
+      });
+    }
+  }; 
+
+  // サーバーからイベントデータを取得する関数
+  function fetchEventData(dateStr) {
+    fetch('/get-event-data/' + dateStr)
+    .then(response => response.json())
+    .then(data => {
+      displayEventData(data);
+    });
+  }
+
+  // イベントデータを表示する関数
+  function displayEventData(data) {
+    var displayElement = document.getElementById('eventDisplay');
+    displayElement.innerHTML = '';
+
+    data.forEach(event => {
+      // イベントデータを表示する処理
+    });
+  }
+
+  // CSRFトークン取得関数
+  function getCookie(name) {
+        // 関数の実装
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+     }
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'ja',
+      dateClick: function(info) {
+        fetchEventData(info.dateStr); // サーバーからイベントデータを取得する関数を呼び出し
+      }
+    });
+    calendar.render();
+
+    document.getElementById('addEventButton').addEventListener('click', function() {
+      document.getElementById('addEventForm').style.display = 'block';  
+    });
+  });
+
+  window.addEvent = function() {
+    var title = document.getElementById('eventTitle').value;
+    var date = document.getElementById('eventDate').value;
+    var imageUrl = 'デフォルトのイメージURL'; // デフォルトのURLを設定、またはユーザー入力値を使用
+
+    if (title && date) {
+      calendar.addEvent({
+        title: title,
+        start: date,
+        allDay: true
+      });
+
+      // サーバーにイベントを保存する
+      fetch('{% url 'account:add_event' %}', { // Django URL テンプレートタグを使用
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ title: title, date: date, image_url: imageUrl }) // image_urlを含め })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Event added:', data);
+        document.getElementById('addEventForm').style.display = 'none'; // フォームを非表示にする
+      })
+      .catch(error => {
+        console.error('Could not save the event:', error);
+      });
+    }
+  };
+
+  // サーバーからイベントデータを取得する関数
+  function fetchEventData(dateStr) {
+    fetch('/get-event-data/' + dateStr)
+    .then(response => response.json())
+    .then(data => {
+      displayEventData(data);
+    });
+  }
+
+  // イベントデータを表示する関数
+  function displayEventData(data) {
+    var displayElement = document.getElementById('eventDisplay');
+    displayElement.innerHTML = '';
+
+    data.forEach(event => {
+      // イベントデータを表示する処理
+    });   
+  }
+</script>
+
+{% endblock content %}
+    
+      
